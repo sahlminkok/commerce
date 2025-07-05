@@ -8,7 +8,7 @@ from .forms import AuctionListingForm
 from .models import User, AuctionListing
 
 def index(request):
-    listings = AuctionListing.objects.all()
+    listings = AuctionListing.objects.filter(is_active=True)
     return render(request, "auctions/index.html", { "listings": listings })
 
 
