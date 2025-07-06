@@ -7,7 +7,7 @@
       {% for listing in listings %}
         <div class="listing card p-4 mb-3">
           <h4>
-            <strong><a href="">{{ listing.title }}</a></strong>
+            <strong><a href="{% url 'listing_page' listing.id %}">{{ listing.title }}</a></strong>
           </h4>
           <p><strong>Price:</strong> ${{ listing.current_price }}</p>
           <p>Created {{ listing.created_at }}</p>
