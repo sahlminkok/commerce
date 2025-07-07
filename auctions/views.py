@@ -158,3 +158,20 @@ def remove_from_watchlist(request, id):
             watchlist_item.delete()
             messages.success(request, "You've successfully removed listing from watchlist")
             return redirect("listing_page", id)
+        
+@login_required(login_url="login")
+def close_auction_listing(request, id):
+    if request.method == "POST":
+        listing = get_object_or_404(AuctionListing, pk=id)
+        highest_bid_obj = listing.bids.order_by('-price', '-created_at').first()
+
+        if listing.is_active:
+            listing.is_active = False
+            listing.winner = highest_bid_obj.user
+            listing.save()
+
+            messages.success(request, "This auction has been closed successfully!")
+            return redirect("listing_page", id)
+        else:
+            messages.error(request, "Listing is already been closed")
+            return redirect("index")
