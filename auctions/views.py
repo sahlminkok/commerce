@@ -115,6 +115,10 @@ def listing_page(request, id):
             messages.error(request, f"Your bid must be at least the starting bid (${listing.starting_bid:.2f}).")
             return redirect("listing_page", id)
         
+        if highest_bid_obj.user == request.user:
+            messages.error(request, "Your bid is currently the highest bid.")
+            return redirect("listing_page", id)
+        
         Bid.objects.create(price=new_bid_price, user=request.user, auction_listing=listing)
 
         listing.current_price = new_bid_price
@@ -126,7 +130,8 @@ def listing_page(request, id):
     return render(request, "auctions/listing.html", { 
         "listing": listing,
         "no_of_bids": no_of_bids,
-        "watchlist_item": watchlist_item
+        "watchlist_item": watchlist_item,
+        "highest_bid_obj": highest_bid_obj
     })
 
 @login_required(login_url="login")

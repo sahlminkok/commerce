@@ -15,18 +15,18 @@
   {% if watchlist_item %}
   <form action="{% url 'remove_from_watchlist' listing.id %}" method="post">
     {% csrf_token %}
-    <button type="submit" class="btn btn-secondary">Remove from Watchlist</button>
+    <button type="submit" class="btn btn-secondary">
+      Remove from Watchlist
+    </button>
   </form>
-  <br>
+  <br />
   {% else %}
   <form action="{% url 'add_to_watchlist' listing.id %}" method="post">
     {% csrf_token %}
     <button type="submit" class="btn btn-secondary">Add to Watchlist</button>
   </form>
-  <br>
-  {% endif %}
-
-  {% if listing.image %}
+  <br />
+  {% endif %} {% if listing.image %}
   <img href="{{ listing.image }}" alt="{{ listing.title }}" />
   {% endif %}
 
@@ -34,8 +34,10 @@
   <h3><strong>${{ listing.current_price }}</strong></h3>
   <br /><br />
   <div class="bids">
-    <span class="form-label"
-      >{{ no_of_bids }} bid(s) so far. Your bid is the current bid</span
+    <span class="form-label">{{ no_of_bids }} bid(s) so far.</span>
+    <span
+      >{% if highest_bid_obj.user == request.user %}Your bid is the current
+      bid{% endif %}</span
     >
     <form action="" method="post">
       {% csrf_token %}
