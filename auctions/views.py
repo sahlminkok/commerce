@@ -8,7 +8,7 @@ from django.urls import reverse
 from decimal import Decimal, InvalidOperation
 
 from .forms import AuctionListingForm
-from .models import User, AuctionListing, Bid
+from .models import User, AuctionListing, Bid, WatchlistItem
 
 def index(request):
     listings = AuctionListing.objects.filter(is_active=True)
@@ -90,6 +90,8 @@ def listing_page(request, id):
     current_highest_price = highest_bid_obj.price if highest_bid_obj else listing.current_price
     no_of_bids = listing.bids.count()
 
+    watchlist_item = request.user.watchlist.filter(auction_listing=listing)
+
     if listing.current_price != current_highest_price:
         listing.current_price = current_highest_price
         listing.save()
@@ -123,5 +125,20 @@ def listing_page(request, id):
     
     return render(request, "auctions/listing.html", { 
         "listing": listing,
-        "no_of_bids": no_of_bids
+        "no_of_bids": no_of_bids,
+        "watchlist_item": watchlist_item
     })
+
+@login_required(login_url="login")
+def add_to_watchlist(request, id):
+    if request.method == "POST":
+        listing = get_object_or_404(AuctionListing, pk=id)
+        user = request.user
+
+        try:
+            WatchlistItem.objects.create(auction_listing=listing, user=user)
+            messages.success(request, "You've successfully added listing to watchlist")
+            return redirect('listing_page', id)
+        except IntegrityError:
+            messages.error(request, "Watchlist item with this User and Auction listing already exists.")
+            return redirect('listing_page', id)
