@@ -7,7 +7,7 @@ class User(AbstractUser):
 class AuctionListing(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="listings")
     title = models.CharField(max_length=150)
-    description = models.TextField(blank=True)
+    description = models.TextField(blank=False, null=False)
     starting_bid = models.DecimalField(max_digits=10, decimal_places=2)
     current_price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.URLField(blank=True, null=True)
@@ -36,3 +36,11 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.user.username} on {self.auction_listing.title}: {self.text[:50]}"
+
+class WatchlistItem(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="watchlist")
+    auction_listing = models.ForeignKey(AuctionListing, on_delete=models.CASCADE, related_name="watchlist")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'auction_listing')
