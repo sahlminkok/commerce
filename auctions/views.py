@@ -142,3 +142,14 @@ def add_to_watchlist(request, id):
         except IntegrityError:
             messages.error(request, "Watchlist item with this User and Auction listing already exists.")
             return redirect('listing_page', id)
+
+@login_required(login_url="login")
+def remove_from_watchlist(request, id):
+    if request.method == "POST":
+        listing = get_object_or_404(AuctionListing, pk=id)
+        watchlist_item = request.user.watchlist.filter(auction_listing=listing)
+
+        if watchlist_item:
+            watchlist_item.delete()
+            messages.success(request, "You've successfully removed listing from watchlist")
+            return redirect("listing_page", id)

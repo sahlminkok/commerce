@@ -13,7 +13,11 @@
   <h1>Listing: {{ listing.title }}</h1>
 
   {% if watchlist_item %}
-  <p class="bg-secondary text-white" style="width: fit-content; padding: 2px 4px; border-radius: 6px;">Watchlist</p>
+  <form action="{% url 'remove_from_watchlist' listing.id %}" method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-secondary">Remove from Watchlist</button>
+  </form>
+  <br>
   {% else %}
   <form action="{% url 'add_to_watchlist' listing.id %}" method="post">
     {% csrf_token %}
