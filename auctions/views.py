@@ -8,7 +8,7 @@ from django.urls import reverse
 from decimal import Decimal, InvalidOperation
 
 from .forms import AuctionListingForm
-from .models import User, AuctionListing, Bid, WatchlistItem
+from .models import User, AuctionListing, Bid, WatchlistItem, Comment
 
 def index(request):
     listings = AuctionListing.objects.filter(is_active=True)
@@ -92,6 +92,8 @@ def listing_page(request, id):
 
     watchlist_item = request.user.watchlist.filter(auction_listing=listing)
 
+    comments = listing.comments.all()
+
     if listing.current_price != current_highest_price:
         listing.current_price = current_highest_price
         listing.save()
@@ -131,7 +133,8 @@ def listing_page(request, id):
         "listing": listing,
         "no_of_bids": no_of_bids,
         "watchlist_item": watchlist_item,
-        "highest_bid_obj": highest_bid_obj
+        "highest_bid_obj": highest_bid_obj,
+        "comments": comments
     })
 
 @login_required(login_url="login")
@@ -174,4 +177,19 @@ def close_auction_listing(request, id):
             return redirect("listing_page", id)
         else:
             messages.error(request, "Listing is already been closed")
+            return redirect("index")
+
+@login_required(login_url="login")
+def comment_on_listing(request, listing_id):
+    if request.method == "POST":
+        text = request.POST["text"]
+        listing = get_object_or_404(AuctionListing, pk=listing_id)
+        user = request.user
+        
+        if listing.is_active:
+            Comment.objects.create(text=text, auction_listing=listing, user=user)
+            messages.success(request, "Successfully commented on listing")
+            return redirect("listing_page", listing_id)
+        else:
+            messages.error(request, "This auction is already closed")
             return redirect("index")
