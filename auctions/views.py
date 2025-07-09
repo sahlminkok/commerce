@@ -193,3 +193,9 @@ def comment_on_listing(request, listing_id):
         else:
             messages.error(request, "This auction is already closed")
             return redirect("index")
+
+@login_required(login_url="login")
+def watchlist_page(request):
+    watchlist = request.user.watchlist.all()
+
+    return render(request, "auctions/watchlist.html", { "watchlist": watchlist })
