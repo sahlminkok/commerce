@@ -7,10 +7,10 @@ __pycache__/
 .venv/
 
 # Environment variables
-.env
 
 # VS Code
-.vscode/
 
 # OS
 .DS_Store
+config.bat
+node_modules

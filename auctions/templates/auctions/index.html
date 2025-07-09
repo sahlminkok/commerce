@@ -1,8 +1,9 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
+  <div class="container">
     <h2>Active Listings</h2>
-
+    <br>
     <div class="d-flex flex-column">
       {% for listing in listings %}
         <div class="listing card p-4 mb-3">
@@ -14,4 +15,5 @@
         </div>
       {% endfor %}
     </div>
+  </div>
 {% endblock %}
